@@ -9,7 +9,7 @@ import (
 )
 
 func NewSql() (*sql.DB, error) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", env.DB_USER, env.DB_PW, env.DB_HOST, env.DB_PORT, env.DB_NAME)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", env.DB_USER, env.DB_PW, env.DB_HOST, env.DB_PORT, env.DB_NAME)
 
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {

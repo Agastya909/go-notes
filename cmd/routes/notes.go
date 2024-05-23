@@ -26,8 +26,12 @@ func (h *handler) NoteRoutes(r *mux.Router) {
 }
 
 func (h *handler) GetAll(w http.ResponseWriter, r *http.Request) {
-	h.note.GetAll()
-	w.WriteHeader(http.StatusOK)
+	notes, err := h.note.GetAll()
+	if err != nil {
+		utils.WriteHttpError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	utils.WriteHttpSuccess(w, http.StatusOK, utils.MESSAGES["NOTE_FOUND"], notes)
 }
 
 func (h *handler) GetById(w http.ResponseWriter, r *http.Request) {
@@ -46,7 +50,7 @@ func (h *handler) DeleteById(w http.ResponseWriter, r *http.Request) {
 	id := query["id"]
 	err := h.note.DeleteById(id)
 	if err != nil {
-		utils.WriteHttpError(w, http.StatusBadRequest, utils.MESSAGES["COULD_NOT_DELETE"])
+		utils.WriteHttpError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 	utils.WriteHttpSuccess(w, http.StatusOK, utils.MESSAGES["NOTE_DELETED"], nil)
@@ -61,14 +65,17 @@ func (h *handler) UpdateById(w http.ResponseWriter, r *http.Request) {
 
 func (h *handler) Save(w http.ResponseWriter, r *http.Request) {
 	var payload types.NewNote
-	if err := utils.ParseJsonRequest(r, &payload); err != nil {
-		utils.WriteHttpError(w, http.StatusBadRequest, utils.MESSAGES["NO_NOTE_BODY"])
-		return
-	}
-	err := h.note.Save(payload)
+	err := utils.ParseJsonRequest(r, &payload)
 	if err != nil {
-		utils.WriteHttpError(w, http.StatusBadRequest, utils.MESSAGES["COULD_NOT_SAVE"])
+		utils.WriteHttpError(w, http.StatusBadRequest, err.Error())
 		return
 	}
+
+	err = h.note.Save(payload)
+	if err != nil {
+		utils.WriteHttpError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	utils.WriteHttpSuccess(w, http.StatusOK, utils.MESSAGES["NOTE_SAVED"], nil)
 }
