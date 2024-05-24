@@ -37,33 +37,48 @@ func (s *Store) GetAll() ([]types.Note, error) {
 }
 
 func (s *Store) GetById(id string) (types.Note, error) {
-	return types.Note{
-		Id:        "j",
-		Title:     "t",
-		Body:      "b",
-		CreatedOn: time.Now().Local().Add(time.Hour*5 + time.Minute*30),
-	}, nil
+	row := s.db.QueryRow("SELECT * FROM notes WHERE id = ?", id)
+	var note types.Note
+	err := row.Scan(&note.Id, &note.Title, &note.Body, &note.CreatedOn)
+	if err != nil {
+		return types.Note{}, fmt.Errorf(utils.MESSAGES["NOT_ID_INVALID"])
+	}
+	return note, nil
 }
 
 func (s *Store) DeleteById(id string) error {
 	row := s.db.QueryRow("SELECT * FROM notes WHERE id = ?", id)
 	err := row.Scan()
 	if err == sql.ErrNoRows {
-		return fmt.Errorf(err.Error())
+		return fmt.Errorf(utils.MESSAGES["NOT_ID_INVALID"])
 	}
+
 	_, err = s.db.Exec("DELETE FROM notes WHERE id = ?", id)
 	if err != nil {
-		return fmt.Errorf(err.Error())
+		return fmt.Errorf(utils.MESSAGES["COULD_NOT_DELETE"])
 	}
 	return nil
 }
 
-func (s *Store) UpdateById(id string) error {
+func (s *Store) UpdateById(id string, payload types.NewNote) error {
+	if len(payload.Title) == 0 || len(payload.Body) == 0 {
+		return fmt.Errorf(utils.MESSAGES["NO_NOTE_BODY"])
+	}
+	currentTime := time.Now().Local().Add(time.Hour*5 + time.Minute*30)
+
+	_, err := s.db.Exec("UPDATE notes SET title = ?, body = ?, updated_on = ? WHERE id = ? ", payload.Title, payload.Body, currentTime, id)
+	if err == sql.ErrNoRows {
+		return fmt.Errorf(utils.MESSAGES["NOT_ID_INVALID"])
+	}
 	return nil
 }
 
 func (s *Store) Save(NewNote types.NewNote) error {
 	id, createdOn := utils.GetUUID(), time.Now().Local().Add(time.Hour*5+time.Minute*30)
+	if len(NewNote.Body) == 0 || len(NewNote.Title) == 0 {
+		return fmt.Errorf(utils.MESSAGES["NO_NOTE_BODY"])
+	}
+
 	_, err := s.db.Exec("INSERT INTO notes (id, title, body, created_on) VALUES(?,?,?,?)", id, NewNote.Title, NewNote.Body, createdOn)
 	if err != nil {
 		return fmt.Errorf(utils.MESSAGES["COULD_NOT_SAVE"])

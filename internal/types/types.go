@@ -20,6 +20,6 @@ type NoteRepository interface {
 	GetAll() ([]Note, error)
 	GetById(id string) (Note, error)
 	DeleteById(id string) error
-	UpdateById(id string) error
+	UpdateById(id string, newNote NewNote) error
 	Save(NewNote) error
 }

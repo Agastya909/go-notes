@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -20,45 +19,43 @@ var MESSAGES = map[string]string{
 	"NOT_ID_INVALID":   "note with this id not found",
 	"NOTE_NOT_FOUND":   "note not found",
 	"NOTE_FOUND":       "note found",
+	"NOTE_UPDATED":     "note updated",
+	"COULD_NOT_UPDATE": "could not update the note",
 }
 
 func ParseJsonRequest(r *http.Request, payload any) error {
 	if r.Body == nil {
-		log.Println("json missing")
 		return fmt.Errorf("missing request body")
 	}
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Println("error reading request body:", err)
 		return fmt.Errorf("error reading request body: %v", err)
 	}
 
 	if len(body) == 0 {
-		log.Println("json missing")
 		return fmt.Errorf("missing request body")
 	}
 
 	err = json.Unmarshal(body, payload)
 	if err != nil {
-		log.Println("error decoding json:", err)
 		return fmt.Errorf("error decoding json: %v", err)
 	}
 
 	return nil
 }
 
-func WriteJsonResponse(w http.ResponseWriter, statusCode int, res any) error {
+func writeJsonResponse(w http.ResponseWriter, statusCode int, res any) error {
 	w.Header().Add("Content-type", "application/json")
 	w.WriteHeader(statusCode)
 	return json.NewEncoder(w).Encode(res)
 }
 
 func WriteHttpError(w http.ResponseWriter, statusCode int, message string) {
-	WriteJsonResponse(w, statusCode, map[string]string{"message": message})
+	writeJsonResponse(w, statusCode, map[string]string{"message": message})
 }
 
 func WriteHttpSuccess(w http.ResponseWriter, statusCode int, message string, data any) {
-	WriteJsonResponse(w, statusCode, map[string]any{"message": message, "data": data})
+	writeJsonResponse(w, statusCode, map[string]any{"message": message, "data": data})
 }
 
 func GetUUID() string {

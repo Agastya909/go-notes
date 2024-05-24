@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/agastya909/go-notes/internal/types"
@@ -20,7 +19,7 @@ func NoteHandler(note types.NoteRepository) *handler {
 func (h *handler) NoteRoutes(r *mux.Router) {
 	r.HandleFunc("/", h.GetAll).Methods("GET")
 	r.HandleFunc("/", h.Save).Methods("POST")
-	r.HandleFunc("/id", h.GetById).Methods("GET")
+	r.HandleFunc("/{id}", h.GetById).Methods("GET")
 	r.HandleFunc("/{id}", h.DeleteById).Methods("DELETE")
 	r.HandleFunc("/{id}", h.UpdateById).Methods("PATCH")
 }
@@ -39,10 +38,10 @@ func (h *handler) GetById(w http.ResponseWriter, r *http.Request) {
 	id := query["id"]
 	res, err := h.note.GetById(id)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		utils.WriteHttpError(w, http.StatusNotFound, err.Error())
+		return
 	}
-	fmt.Println(res)
-	w.WriteHeader(http.StatusOK)
+	utils.WriteHttpSuccess(w, http.StatusOK, utils.MESSAGES["NOTE_FOUND"], res)
 }
 
 func (h *handler) DeleteById(w http.ResponseWriter, r *http.Request) {
@@ -59,8 +58,19 @@ func (h *handler) DeleteById(w http.ResponseWriter, r *http.Request) {
 func (h *handler) UpdateById(w http.ResponseWriter, r *http.Request) {
 	query := mux.Vars(r)
 	id := query["id"]
-	h.note.UpdateById(id)
-	w.WriteHeader(http.StatusOK)
+	var payload types.NewNote
+	err := utils.ParseJsonRequest(r, &payload)
+	if err != nil {
+		utils.WriteHttpError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = h.note.UpdateById(id, payload)
+	if err != nil {
+		utils.WriteHttpError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	utils.WriteHttpSuccess(w, http.StatusOK, utils.MESSAGES["NOTE_UPDATED"], nil)
 }
 
 func (h *handler) Save(w http.ResponseWriter, r *http.Request) {
