@@ -30,6 +30,10 @@ func (h *handler) GetAll(w http.ResponseWriter, r *http.Request) {
 		utils.WriteHttpError(w, http.StatusBadRequest, err.Error())
 		return
 	}
+	if len(notes) == 0 {
+		utils.WriteHttpSuccess(w, http.StatusOK, utils.MESSAGES["NOTE_NOT_FOUND"], notes)
+		return
+	}
 	utils.WriteHttpSuccess(w, http.StatusOK, utils.MESSAGES["NOTE_FOUND"], notes)
 }
 

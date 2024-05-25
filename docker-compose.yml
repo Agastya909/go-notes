@@ -1,0 +1,42 @@
+services:
+  go-notes:
+    container_name: go-notes-docker
+    depends_on:
+      - mysql
+    networks:
+      - mynetwork
+    environment:
+      DB_USER: root
+      DB_PW: root@1234
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: notes
+      SERVER_PORT: 8080
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/app
+    deploy:
+      restart_policy:
+        condition: on-failure
+  mysql:
+    image: mysql:8.3
+    networks:
+      - mynetwork
+    environment:
+      MYSQL_ROOT_PASSWORD: root@1234
+      MYSQL_DATABASE: notes
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql-vol:/mysql/mysql-data
+
+volumes:
+  mysql-vol:
+
+networks:
+  mynetwork:
+    driver: bridge

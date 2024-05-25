@@ -27,7 +27,7 @@ func (s *Store) GetAll() ([]types.Note, error) {
 	var notes []types.Note
 	for rows.Next() {
 		var note types.Note
-		err := rows.Scan(&note.Id, &note.Title, &note.Body, &note.CreatedOn)
+		err := rows.Scan(&note.Id, &note.Title, &note.Body, &note.CreatedOn, &note.UpdatedOn)
 		if err != nil {
 			return nil, fmt.Errorf(err.Error())
 		}
@@ -39,7 +39,7 @@ func (s *Store) GetAll() ([]types.Note, error) {
 func (s *Store) GetById(id string) (types.Note, error) {
 	row := s.db.QueryRow("SELECT * FROM notes WHERE id = ?", id)
 	var note types.Note
-	err := row.Scan(&note.Id, &note.Title, &note.Body, &note.CreatedOn)
+	err := row.Scan(&note.Id, &note.Title, &note.Body, &note.CreatedOn, &note.UpdatedOn)
 	if err != nil {
 		return types.Note{}, fmt.Errorf(utils.MESSAGES["NOT_ID_INVALID"])
 	}

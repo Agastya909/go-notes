@@ -5,10 +5,11 @@ import (
 )
 
 type Note struct {
-	Id        string    `json:"id"`
-	Title     string    `json:"title"`
-	Body      string    `json:"body"`
-	CreatedOn time.Time `json:"created_on"`
+	Id        string     `json:"id"`
+	Title     string     `json:"title"`
+	Body      string     `json:"body"`
+	CreatedOn time.Time  `json:"created_on"`
+	UpdatedOn *time.Time `json:"updated_on"`
 }
 
 type NewNote struct {
