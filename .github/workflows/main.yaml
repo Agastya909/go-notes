@@ -12,6 +12,10 @@ jobs:
     steps:
       - name: Test cicd
         run: echo "Running only tests"
+      - name: Simulate error
+        run: |
+          echo "oh no error"
+          exit 1
   
   deploy:
     runs-on: ubuntu-22.04
