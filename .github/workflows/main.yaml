@@ -22,7 +22,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: |
-            ${{ github.workspace }}/go-notes/readme.md
+            ${{ github.workspace }}/readme.md
 
   deploy:
     runs-on: ubuntu-22.04
