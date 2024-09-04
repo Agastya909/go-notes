@@ -21,7 +21,7 @@ jobs:
       - name: upload zip to gh artifacts
         uses: actions/upload-artifact@v4
         with:
-          path: .
+          path: '**/*'
 
   deploy:
     runs-on: ubuntu-22.04
