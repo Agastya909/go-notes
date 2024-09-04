@@ -14,19 +14,14 @@ jobs:
       - name: Test cicd
         run: echo "Running only tests"
 
-  upload-artifact:
-    runs-on: ubuntu-22.04
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-    steps:
-      - name: upload zip to gh artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          path: |
-            ${{ github.workspace }}/readme.md
-
   deploy:
     runs-on: ubuntu-22.04
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
       - name: Deploy cicd
         run: echo "Running only deploy stage"
+      - name: upload zip to gh artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: |
+            ${{ github.workspace }}/readme.md
