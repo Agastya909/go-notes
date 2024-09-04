@@ -24,8 +24,8 @@ jobs:
       - name: upload zip to gh artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: go-notes-zip
-          path: /
+          name: go-notes-artifact
+          path: go-notes.zip
 
   deploy:
     runs-on: ubuntu-22.04
