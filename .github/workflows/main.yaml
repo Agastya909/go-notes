@@ -24,7 +24,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: go-notes-artifact
-          path: "${{ github.workspace }}/**"
+          path: go-notes
 
   deploy:
     runs-on: ubuntu-22.04
