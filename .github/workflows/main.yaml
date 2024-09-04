@@ -19,7 +19,7 @@ jobs:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
       - name: pwd
-        run: pwd
+        run: ls "${{ github.workspace }}/go-notes/
       - name: upload zip to gh artifacts
         uses: actions/upload-artifact@v4
         with:
