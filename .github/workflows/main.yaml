@@ -21,7 +21,8 @@ jobs:
       - name: upload zip to gh artifacts
         uses: actions/upload-artifact@v4
         with:
-          path: go-notes/readme.md
+          path: |
+            ${{ github.workspace }}/go-notes/readme.md
 
   deploy:
     runs-on: ubuntu-22.04
