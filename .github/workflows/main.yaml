@@ -18,15 +18,10 @@ jobs:
     runs-on: ubuntu-22.04
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
-      - name: pwd 1
-        run: ls /home/runner/work/go-notes/go-notes
-      - name: pwd 2
-        run: ls /home/runner/work/go-notes
       - name: upload zip to gh artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: go-notes-artifact
-          path: go-notes
+          path: .
 
   deploy:
     runs-on: ubuntu-22.04
